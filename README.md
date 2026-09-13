@@ -4,7 +4,7 @@ Private mobile-first guest relations PWA for W Maldives.
 
 ## Runtime
 
-React / Vinext with Supabase PostgreSQL and Supabase Auth. The app uses server-only Supabase sessions in HttpOnly cookies. No guest records or authentication tokens are stored in localStorage. The service worker caches only a non-sensitive offline screen and app icons.
+React / Next.js on Vercel with Supabase PostgreSQL and Supabase Auth. The app uses server-only Supabase sessions in HttpOnly cookies. No guest records or authentication tokens are stored in localStorage. The service worker caches only a non-sensitive offline screen and app icons. The original Vinext preview scripts remain available; Vercel builds with next build.
 
 ## Database
 
@@ -14,7 +14,7 @@ Admin manages team access and guests. Guest Relations edits guests. Manager is r
 
 ## Account setup
 
-The first admin invitation is in the private output file, excluded from Git. New accounts require a valid invitation. Supabase email verification remains enabled. Configure Supabase Auth Site URL and redirect allowlist to the deployed app URL, /auth/callback, and /auth/callback?next=/reset-password. For local development, allow http://localhost:5173/auth/callback and http://localhost:5173/auth/callback?next=/reset-password. Configure custom SMTP before inviting email addresses outside the Supabase organization team.
+Direct registrations join the same hotel workspace with Guest Relations access after email verification, without approval. The existing owner email reservation receives Admin access. Invited registrations wait for the inviter to approve them in Settings. Non-admin inviters can only grant their own role. Invitation links are email-bound and expire after 24 hours. Only the inviter can approve an accepted invitation. Configure Supabase Auth Site URL and redirect allowlist to the deployed app URL, /auth/callback, and /auth/callback?next=/reset-password. Configure custom SMTP before inviting email addresses outside the Supabase organization team.
 
 ## Run
 

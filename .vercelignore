@@ -1,0 +1,10 @@
+work
+outputs
+.env*
+.openai
+.wrangler
+.sites-runtime
+dist
+.git
+supabase
+vite.config.ts
