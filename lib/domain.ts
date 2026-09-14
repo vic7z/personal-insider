@@ -11,8 +11,13 @@ export type Move={id:string;guest_id:string;old_room:string;new_room:string;move
 export type RoomHistory={id:number;guest_id:string;old_room:string;new_room:string;changed_at:string;reason:string};
 export type User={id:string;name:string;email:string;role:typeof roles[number];active:number};
 export function resortToday(now=new Date()){return new Intl.DateTimeFormat('en-CA',{timeZone:'Indian/Maldives',year:'numeric',month:'2-digit',day:'2-digit'}).format(now)}
-export function archived(g:Guest,today:string){return Boolean(g.archived)||g.departure<today}
-export function guestIn(g:Guest,view:string,today:string){if(view==='Archive')return archived(g,today);if(archived(g,today))return false;if(view==='Arrivals')return g.arrival>=today;if(view==='In-House')return g.arrival<=today&&g.departure>=today;if(view==='Departures')return g.departure===today;return true}
+export function resortClock(now=new Date()){
+ const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Indian/Maldives',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(now);
+ const part=(type:string)=>parts.find(p=>p.type===type)!.value;
+ return {date:`${part('year')}-${part('month')}-${part('day')}`,time:`${part('hour')}:${part('minute')}`};
+}
+export function archived(g:Guest,today:string,time='00:00'){return Boolean(g.archived)||g.departure<today||(g.departure===today&&Boolean(g.checkout_time)&&g.checkout_time<=time)}
+export function guestIn(g:Guest,view:string,today:string,time='00:00'){if(view==='Archive')return archived(g,today,time);if(archived(g,today,time))return false;if(view==='Arrivals')return g.arrival>=today;if(view==='In-House')return g.arrival<=today&&g.departure>=today;if(view==='Departures')return g.departure===today;return true}
 export function matchesGuest(g:Guest,q:string,moves:Move[]=[],history:RoomHistory[]=[]){const hay=[g.name,g.room,g.membership,g.travel_agent,...moves.filter(m=>m.guest_id===g.id).flatMap(m=>[m.old_room,m.new_room]),...history.filter(m=>m.guest_id===g.id).flatMap(m=>[m.old_room,m.new_room])].join(' ').toLowerCase();return hay.includes(q.trim().toLowerCase())}
 export function sortGuests(a:Guest,b:Guest,view:string){if(view==='Departures')return (a.checkout_time||'99:99').localeCompare(b.checkout_time||'99:99')||a.room.localeCompare(b.room,undefined,{numeric:true});return (view==='Arrivals'?a.arrival.localeCompare(b.arrival):a.departure.localeCompare(b.departure))||a.room.localeCompare(b.room,undefined,{numeric:true})}
 export function sortMoves(a:Move,b:Move){return a.move_date.localeCompare(b.move_date)||a.move_time.localeCompare(b.move_time)||a.old_room.localeCompare(b.old_room,undefined,{numeric:true})}
