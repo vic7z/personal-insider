@@ -1,11 +1,13 @@
 import {z} from 'zod';
 export const statuses=['Pending','In Progress','Confirmed','Done','Cancelled'] as const;
+export const mealPlans=['Room only','Breakfast only','Half board','Full board','All inclusive'] as const;
+export const epicStatuses=['Pending','Done'] as const;
 export const memberships=['None','Member','Silver Elite','Gold Elite','Platinum Elite','Titanium Elite','Ambassador Elite'] as const;
 export const celebrations=['None','Birthday','Anniversary','Honeymoon','Proposal','Wedding','Other'] as const;
 export const roles=['Admin','Guest Relations','Manager','Butler'] as const;
 export const dateSchema=z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(v=>{const d=new Date(v+'T12:00:00Z');return !isNaN(+d)&&d.toISOString().slice(0,10)===v},'Enter a valid date');
 export const timeSchema=z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
-export const guestSchema=z.object({id:z.string().max(80).optional(),version:z.number().int().optional(),name:z.string().trim().min(1).max(160),room:z.string().trim().min(1).max(20),meal_plan:z.string().max(80).default('Breakfast'),membership:z.enum(memberships),arrival:dateSchema,departure:dateSchema,travel_agent:z.string().max(160).default(''),celebration:z.enum(celebrations),epic:z.string().max(1000).default(''),status:z.enum(statuses),move_planned:z.boolean().default(false),checkout_time:z.union([timeSchema,z.literal('')]).default(''),notes:z.string().max(6000).default('')}).refine(g=>g.departure>=g.arrival,'Departure cannot be before arrival');
+export const guestSchema=z.object({id:z.string().max(80).optional(),version:z.number().int().optional(),name:z.string().trim().min(1).max(160),room:z.string().trim().min(1).max(20),meal_plan:z.string().max(80).default('Breakfast only'),membership:z.enum(memberships),arrival:dateSchema,departure:dateSchema,travel_agent:z.string().max(160).default(''),celebration:z.enum(celebrations),epic:z.string().max(1000).default(''),epic_status:z.enum(epicStatuses).default('Pending'),feedback:z.string().max(6000).default(''),status:z.enum(statuses),move_planned:z.boolean().default(false),checkout_time:z.union([timeSchema,z.literal('')]).default(''),notes:z.string().max(6000).default('')}).refine(g=>g.departure>=g.arrival,'Departure cannot be before arrival');
 export type Guest=z.infer<typeof guestSchema>&{id:string;version:number;archived:number;created_at:string};
 export type Move={id:string;guest_id:string;old_room:string;new_room:string;move_date:string;move_time:string;reason:string;status:typeof statuses[number];version:number};
 export type RoomHistory={id:number;guest_id:string;old_room:string;new_room:string;changed_at:string;reason:string};
