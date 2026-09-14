@@ -1,0 +1,26 @@
+.theme-toggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:44px;min-height:44px;padding:8px 12px;border:1px solid var(--border);border-radius:9px;color:var(--foreground);background:var(--card);font-size:13px;white-space:nowrap}
+.theme-toggle:hover{background:var(--accent)}
+.auth-theme{display:flex;justify-content:flex-end;margin-bottom:20px}
+@media(max-width:767px){.topbar .theme-toggle{padding:8px}.topbar .theme-toggle span{display:none}.topbar-right{gap:8px!important}}
+.dark:root{color-scheme:dark;--background:#101b20;--foreground:#e1eeef;--card:#18272d;--card-foreground:#e1eeef;--popover:#203239;--popover-foreground:#e1eeef;--primary:#71d7ca;--primary-foreground:#092c2b;--secondary:#213a3b;--secondary-foreground:#a1e5db;--muted:#23353d;--muted-foreground:#adbec4;--accent:#25443f;--accent-foreground:#a1e5db;--destructive:#ff96a3;--border:#3a515b;--input:#3a515b;--ring:#71d7ca;--sidebar:#142329;--sidebar-foreground:#bdcdd1;--sidebar-primary:#71d7ca;--sidebar-primary-foreground:#092c2b;--sidebar-accent:#25443f;--sidebar-accent-foreground:#a1e5db;--sidebar-border:#3a515b;--sidebar-ring:#71d7ca}
+.dark .primary{color:var(--primary-foreground)}
+.dark .primary:hover{background:#96e7dd}
+.dark .search-box,.dark .list-divider,.dark .desktop-table th,.dark .desktop-table .choice{background:#1d3037;color:var(--muted-foreground)}
+.dark .desktop-table td,.dark .list-divider,.dark .moment,.dark .attention-item{border-color:var(--border)}
+.dark .nav-button[data-active=true]{color:#a1e5db!important;background:#25443f!important}
+.dark .nav-count,.dark .avatar,.dark .room-number,.dark .guest-summary,.dark .profile-room,.dark .recovery code{background:#25443f;color:#b4e7db;border-color:var(--border)}
+.dark .guest-summary span,.dark .profile-room>span:first-child,.dark .profile-room strong{color:#b4e7db}
+.dark .membership,.dark .moment-room{background:#453a28;color:#efd49e}
+.dark .status-pending{background:#483723;color:#ffd18b}
+.dark .status-in-progress{background:#263d5a;color:#b0d3ff}
+.dark .status-done,.dark .status-confirmed{background:#234534;color:#a0e2b7}
+.dark .status-cancelled,.dark .error{background:#482c35;color:#ffb1bf;border-color:#77505c}
+.dark .stat-label,.dark .breadcrumbs,.dark .topbar-right,.dark .icon-button,.dark .island-note p,.dark .daily-note p,.dark .profile-body p{color:var(--muted-foreground)}
+.dark .stat-icon{background:#25443f;color:#8cddc4}
+.dark .stat-1 .stat-icon{background:#263d5a;color:#b0d3ff}
+.dark .stat-2 .stat-icon{background:#483723;color:#ffd18b}
+.dark .stat-3 .stat-icon{background:#3b3253;color:#d5bafa}
+.dark .mobile-nav button.active,.dark .today-tag{color:var(--primary)}
+.dark .guest-name small,.dark .moment small,.dark .attention-item small,.dark .quiet-note,.dark .empty-state p,.dark .stat>span:last-child,.dark .mobile-dates,.dark .mobile-guest-main small,.dark .panel-footer,.dark .profile-grid small,.dark .settings-card small,.dark .move-clock span,.dark .daily-note span{color:var(--muted-foreground)}
+.dark .archive-button,.dark .move-clock .overdue{color:#ffb1bf}
+.dark .icon-button:hover{background:var(--accent)}
