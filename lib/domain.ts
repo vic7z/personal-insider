@@ -8,7 +8,8 @@ export const roles=['Admin','Guest Relations','Manager','Butler'] as const;
 export const dateSchema=z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(v=>{const d=new Date(v+'T12:00:00Z');return !isNaN(+d)&&d.toISOString().slice(0,10)===v},'Enter a valid date');
 export const timeSchema=z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
 export const guestSchema=z.object({id:z.string().max(80).optional(),version:z.number().int().optional(),name:z.string().trim().min(1).max(160),room:z.string().trim().min(1).max(20),meal_plan:z.string().max(80).default('Breakfast only'),membership:z.enum(memberships),arrival:dateSchema,departure:dateSchema,travel_agent:z.string().max(160).default(''),celebration:z.enum(celebrations),epic:z.string().max(1000).default(''),epic_status:z.enum(epicStatuses).default('Pending'),feedback:z.string().max(6000).default(''),status:z.enum(statuses),move_planned:z.boolean().default(false),checkout_time:z.union([timeSchema,z.literal('')]).default(''),notes:z.string().max(6000).default('')}).refine(g=>g.departure>=g.arrival,'Departure cannot be before arrival');
-export type Guest=z.infer<typeof guestSchema>&{id:string;version:number;archived:number;created_at:string};
+export type Guest=z.infer<typeof guestSchema>&{id:string;version:number;archived:number;created_at:string;stay_status?:'auto'|'booked'|'checked_in'|'checked_out'|'cancelled';checked_in_at?:string|null;checked_out_at?:string|null;cancelled_at?:string|null};
+export function stayLabel(g:Guest){return ({auto:'Automatic',booked:'Booked',checked_in:'Checked in',checked_out:'Checked out',cancelled:'Booking cancelled'})[g.stay_status||'auto']}
 export type Move={id:string;guest_id:string;old_room:string;new_room:string;move_date:string;move_time:string;reason:string;status:typeof statuses[number];version:number};
 export type RoomHistory={id:number;guest_id:string;old_room:string;new_room:string;changed_at:string;reason:string};
 export type User={id:string;name:string;email:string;role:typeof roles[number];active:number};
@@ -18,10 +19,12 @@ export function resortClock(now=new Date()){
  const part=(type:string)=>parts.find(p=>p.type===type)!.value;
  return {date:`${part('year')}-${part('month')}-${part('day')}`,time:`${part('hour')}:${part('minute')}`};
 }
-export function archived(g:Guest,today:string,time='00:00'){return Boolean(g.archived)||g.departure<today||(g.departure===today&&Boolean(g.checkout_time)&&g.checkout_time<=time)}
+export function archived(g:Guest,today:string,time='00:00'){if(g.archived||g.stay_status==='checked_out'||g.stay_status==='cancelled')return true;if(g.stay_status==='checked_in')return false;return g.departure<today||(g.departure===today&&Boolean(g.checkout_time)&&g.checkout_time<=time)}
 export function guestIn(g:Guest,view:string,today:string,time='00:00'){
  if(view==='Archive')return archived(g,today,time);
- if(g.archived)return false;
+ if(g.archived||g.stay_status==='checked_out'||g.stay_status==='cancelled')return false;
+ if(g.stay_status==='checked_in'){if(view==='Arrivals')return false;if(view==='Departures')return g.departure<=today;return true;}
+ if(g.stay_status==='booked'){if(archived(g,today,time))return false;if(view==='In-House')return false;if(view==='Arrivals')return true;if(view==='Departures')return g.departure===today;return true;}
  // Daily activity remains visible for the whole day, even after checkout.
  if(view==='Departures')return g.departure===today;
  if(view==='Arrivals')return g.arrival>=today;
@@ -34,7 +37,7 @@ export function dashboardSummary(guests:Guest[],moves:Move[],today:string,time:s
  const departures=guests.filter(g=>guestIn(g,'Departures',today,time));
  const inHouse=guests.filter(g=>guestIn(g,'In-House',today,time));
  const activeIds=new Set(guests.filter(g=>!archived(g,today,time)).map(g=>g.id));
- return {arrivals:arrivals.filter(g=>g.arrival===today).length,upcoming:arrivals.filter(g=>g.arrival>today).length,
+ return {arrivals:arrivals.filter(g=>g.arrival<=today).length,upcoming:arrivals.filter(g=>g.arrival>today).length,
  inHouse:inHouse.length,departures:departures.length,checkedOut:departures.filter(g=>archived(g,today,time)).length,
  moves:moves.filter(m=>m.move_date===today&&!['Done','Cancelled'].includes(m.status)&&activeIds.has(m.guest_id)).length};
 }
