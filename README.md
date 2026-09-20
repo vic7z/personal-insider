@@ -27,3 +27,13 @@ Local preview uses the online Supabase project. Previous D1 preview state is ret
 ## Verification
 
 TypeScript and production build checked. Transactional database checks cover single guest identity, planned/completed moves, history, stale edits, departures, archives, and Manager/Butler/inactive/anonymous access. Test records were rolled back. Email delivery and live user registration require the owner's email confirmation and Auth URL configuration.
+
+## BNF schedules
+
+BNF appears in desktop and mobile navigation. Admin and Guest Relations users can select a PDF (up to 3 MB / 20 pages), extract text locally, compare it against rendered page previews, correct dates and details, and save the reviewed text. Manager and Butler users have read-only access. Only the title, date range, reviewed details, review notes and source filename are sent to Supabase; PDF bytes and page previews never leave the browser. Scanned/image text requires manual transcription; extraction is not OCR. Sparse table cells retain their date labels and merged notes remain unassigned.
+
+Apply `20260920170000_bnf_schedules.sql` and `20260920170100_bnf_initial_schedules.sql` to a new database. Both are already applied to the connected project. The second seeds visually reviewed details for 8–14 and 15–21 September 2026. There is no Storage bucket dependency. The public RPC calls a checked private function using the existing active-member/session rules; direct table access is denied.
+
+The bundled `public/pdf.worker.min.mjs` matches the pinned `pdfjs-dist` version. Copy the corresponding `node_modules/pdfjs-dist/build/pdf.worker.min.mjs` when deliberately upgrading PDF.js.
+
+Validate with `npx tsc --noEmit`, `npx next build`, and `node tests/bnf.mjs <8-14-PDF-path> <15-21-PDF-path>`. Database authorization assertions are in `tests/bnf.sql` and roll back their synthetic records.
